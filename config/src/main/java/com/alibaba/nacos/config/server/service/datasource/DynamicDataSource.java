@@ -45,12 +45,14 @@ public class DynamicDataSource {
             
             if (PropertyUtil.isEmbeddedStorage()) {
                 if (localDataSourceService == null) {
+                    System.out.println("local");
                     localDataSourceService = new LocalDataSourceServiceImpl();
                     localDataSourceService.init();
                 }
                 return localDataSourceService;
             } else {
                 if (basicDataSourceService == null) {
+                    System.out.println("basic");
                     basicDataSourceService = new ExternalDataSourceServiceImpl();
                     basicDataSourceService.init();
                 }

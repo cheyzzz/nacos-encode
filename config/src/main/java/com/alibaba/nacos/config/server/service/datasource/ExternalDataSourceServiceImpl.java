@@ -78,6 +78,7 @@ public class ExternalDataSourceServiceImpl implements DataSourceService {
 
     @Override
     public void init() {
+        System.out.println("init");
         queryTimeout = ConvertUtils.toInt(System.getProperty("QUERYTIMEOUT"), 3);
         jt = new JdbcTemplate();
         // Set the maximum number of records to prevent memory expansion
@@ -119,6 +120,7 @@ public class ExternalDataSourceServiceImpl implements DataSourceService {
     @Override
     public synchronized void reload() throws IOException {
         try {
+            System.out.println("reload");
             dataSourceList = new ExternalDataSourceProperties()
                     .build(EnvUtil.getEnvironment(), (dataSource) -> {
                         JdbcTemplate jdbcTemplate = new JdbcTemplate();

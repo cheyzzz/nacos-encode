@@ -13,6 +13,7 @@
 
 package com.alibaba.nacos.config.server.service.datasource;
 
+import com.alibaba.nacos.common.utils.StringUtils;
 import com.alibaba.nacos.config.server.utils.EncryptUtils;
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
@@ -37,6 +38,15 @@ import static com.alibaba.nacos.config.server.utils.LogUtil.FATAL_LOG;
 public class ExternalDataSourceProperties {
 
     private static final String JDBC_DRIVER_NAME = "com.mysql.cj.jdbc.Driver";
+    private String jdbcDriverNameDM;
+
+    public String getJdbcDriverNameDM() {
+        return jdbcDriverNameDM;
+    }
+
+    public void setJdbcDriverNameDM(String jdbcDriverNameDM) {
+        this.jdbcDriverNameDM = jdbcDriverNameDM;
+    }
 
     private static final String TEST_QUERY = "SELECT 1";
 
@@ -74,6 +84,7 @@ public class ExternalDataSourceProperties {
      * @return List of {@link HikariDataSource}
      */
     List<HikariDataSource> build(Environment environment, Callback<HikariDataSource> callback) {
+        System.out.println("build");
         List<HikariDataSource> dataSources = new ArrayList<>();
         Binder.get(environment).bind("db", Bindable.ofInstance(this));
         Preconditions.checkArgument(Objects.nonNull(num), "db.num is null");
@@ -101,6 +112,20 @@ public class ExternalDataSourceProperties {
             ds.setConnectionTestQuery(TEST_QUERY);
             ds.setIdleTimeout(TimeUnit.MINUTES.toMillis(10L));
             ds.setConnectionTimeout(TimeUnit.SECONDS.toMillis(3L));
+            System.out.println("#################################");
+            System.out.println("jdbcDriverName=" + JDBC_DRIVER_NAME);
+            System.out.println("jdbcDriverNameDM=" + jdbcDriverNameDM);
+            if (StringUtils.isNotEmpty(jdbcDriverNameDM)) {
+                // 增加其他数据库驱动的支持
+                ds.setDriverClassName(jdbcDriverNameDM);
+            } else {
+                //默认使用mysql驱动
+                ds.setDriverClassName(JDBC_DRIVER_NAME);
+            }
+            System.out.println("jdbcDriverName=" + JDBC_DRIVER_NAME);
+            System.out.println("jdbcDriverName=" + jdbcDriverNameDM);
+            System.out.println("dataSources=" + dataSources);
+            System.out.println("#################################");
             dataSources.add(ds);
             callback.accept(ds);
         }
